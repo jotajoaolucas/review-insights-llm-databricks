@@ -4,12 +4,14 @@
 # environment_version = "5"
 # ///
 # MAGIC %md
-# MAGIC # 05 - Silver: reviews_enriched
-# MAGIC Classifica cada review em **ASSUNTO + SENTIMENTO** numa única chamada de LLM (JSON).
-# MAGIC - Entrada: `silver.reviews_embeddings`
+# MAGIC #Rascunhos
+# MAGIC Classifica blabla 
 # MAGIC - Saída: `silver.reviews_enriched`
-# MAGIC
-# MAGIC Nota: produto/departamento não é classificado por LLM — já existe nas colunas originais do dataset.
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Classificação: assunto + sentimento (uma chamada, retorno em JSON)
 
 # COMMAND ----------
 
@@ -17,13 +19,9 @@ from pyspark.sql import functions as F
 
 CATALOG = "voc_project"
 SILVER_SCHEMA = f"{CATALOG}.silver"
+GOLD_SCHEMA = f"{CATALOG}.gold"
 
 LLM_ENDPOINT = "databricks-meta-llama-3-3-70b-instruct"
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ## Classificação: assunto + sentimento (uma chamada, retorno em JSON)
 
 # COMMAND ----------
 
@@ -111,3 +109,42 @@ df_final.groupBy("sentimento") \
          F.count("*").alias("qtd")) \
     .orderBy("rating_medio") \
     .show()
+
+# COMMAND ----------
+
+
+
+# COMMAND ----------
+
+
+
+# COMMAND ----------
+
+from pyspark.sql import functions as F
+
+CATALOG = "voc_project"
+SILVER_SCHEMA = f"{CATALOG}.silver"
+GOLD_SCHEMA = f"{CATALOG}.gold"
+
+LLM_ENDPOINT = "databricks-meta-llama-3-3-70b-instruct"
+
+# COMMAND ----------
+
+df_final = spark.table(f"{SILVER_SCHEMA}.reviews_enriched")
+
+# COMMAND ----------
+
+df_final.columns
+
+# COMMAND ----------
+
+reviews = spark.table(f"{GOLD_SCHEMA}.reviews_classified")
+
+sentimento_por_assunto = (reviews
+    .groupBy("assunto")#, "sentimento")
+    .agg(F.count("*").alias("qtd"))
+    .orderBy("assunto")#, "sentimento"), "sentimento")
+)
+
+print(f"✅ gold.sentimento_por_assunto")
+display(sentimento_por_assunto)

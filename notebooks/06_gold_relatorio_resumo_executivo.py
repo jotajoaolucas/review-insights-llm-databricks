@@ -108,7 +108,7 @@ df_resumos = spark.createDataFrame(resumos)
 
 df_resumos.write.format("delta").mode("overwrite") \
     .option("overwriteSchema", "true") \
-    .saveAsTable(f"{GOLD_SCHEMA}.resumos_executivos")
+    .saveAsTable(f"{GOLD_SCHEMA}.relatorio_resumo_executivo")
 
-print("✅ gold.resumos_executivos gravada")
-display(spark.table(f"{GOLD_SCHEMA}.resumos_executivos"))
+print("✅ gold.relatorio_resumo_executivo gravada")
+display(spark.table(f"{GOLD_SCHEMA}.relatorio_resumo_executivo"))
