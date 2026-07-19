@@ -4,10 +4,10 @@
 # environment_version = "2"
 # ///
 # MAGIC %md
-# MAGIC # 09 - Relatório Executivo (HTML)
+# MAGIC # 07 - Relatório Executivo (HTML)
 # MAGIC Gera um relatório profissional em HTML com os resumos executivos e as análises,
 # MAGIC pronto para visualizar, salvar no Volume e (depois) enviar por email.
-# MAGIC - Entradas: `gold.resumos_executivos`, `gold.assunto_resumo`, `gold.sentimento_por_assunto`
+# MAGIC - Entradas: `gold.resumo_executivo`, `gold.assunto_resumo`, `gold.sentimento_por_assunto`
 # MAGIC - Saída: arquivo HTML no Volume
 
 # COMMAND ----------
@@ -26,7 +26,7 @@ OUTPUT_PATH = "/Volumes/voc_project/bronze/raw_files"   # onde o HTML será salv
 
 # COMMAND ----------
 
-resumos = spark.table(f"{GOLD_SCHEMA}.resumos_executivos").orderBy(F.desc("qtd_negativos")).collect()
+resumos = spark.table(f"{GOLD_SCHEMA}.resumo_executivo").orderBy(F.desc("qtd_negativos")).collect()
 assunto_resumo = spark.table(f"{GOLD_SCHEMA}.assunto_resumo").orderBy(F.desc("pct_negativo")).collect()
  
 total_reviews = spark.table(f"{GOLD_SCHEMA}.reviews_classified").count()

@@ -4,7 +4,7 @@
 # environment_version = "5"
 # ///
 # MAGIC %md
-# MAGIC # 07 - Gold: Agregações
+# MAGIC # 05 - Gold: Agregações
 # MAGIC Tabelas de análise, prontas para filtrar e alimentar o dashboard.
 # MAGIC - Entrada: `gold.reviews_classified`
 # MAGIC - Saídas:

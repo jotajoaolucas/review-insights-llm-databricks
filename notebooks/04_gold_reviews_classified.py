@@ -4,7 +4,7 @@
 # environment_version = "5"
 # ///
 # MAGIC %md
-# MAGIC # 06 - Gold: reviews_classified
+# MAGIC # 04 - Gold: reviews_classified
 # MAGIC Tabela principal do projeto: cada review com assunto, sentimento e produto,
 # MAGIC pronta para filtrar e cruzar.
 # MAGIC - Entrada: `silver.reviews_enriched`

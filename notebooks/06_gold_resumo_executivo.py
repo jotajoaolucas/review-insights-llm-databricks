@@ -4,11 +4,11 @@
 # environment_version = "5"
 # ///
 # MAGIC %md
-# MAGIC # 08 - Gold: Resumos Executivos Automáticos
+# MAGIC # 06 - Gold: Resumos Executivos Automáticos
 # MAGIC Para cada assunto crítico, o LLM lê as avaliações negativas e sintetiza os
 # MAGIC principais problemas em pontos acionáveis — voice of customer automatizado.
 # MAGIC - Entrada: `gold.reviews_classified`
-# MAGIC - Saída: `gold.resumos_executivos`
+# MAGIC - Saída: `gold.resumo_executivo`
 
 # COMMAND ----------
 
@@ -108,7 +108,7 @@ df_resumos = spark.createDataFrame(resumos)
 
 df_resumos.write.format("delta").mode("overwrite") \
     .option("overwriteSchema", "true") \
-    .saveAsTable(f"{GOLD_SCHEMA}.relatorio_resumo_executivo")
+    .saveAsTable(f"{GOLD_SCHEMA}.resumo_executivo")
 
-print("✅ gold.relatorio_resumo_executivo gravada")
-display(spark.table(f"{GOLD_SCHEMA}.relatorio_resumo_executivo"))
+print("✅ gold.resumo_executivo gravada")
+display(spark.table(f"{GOLD_SCHEMA}.resumo_executivo"))
