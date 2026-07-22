@@ -1,16 +1,12 @@
-name: Relatório VoC — baixar do Databricks e enviar
+name: Relatorio VoC - baixar do Databricks e enviar
 
-# Fluxo 100% automático:
-#   1. Baixa o relatório HTML do Volume do Databricks via Files API
-#   2. Envia por email via Gmail
-# Nenhum passo manual — nem baixar, nem commitar.
+# Fluxo:
+#   1. Baixa o relatório HTML do Volume do Databricks (Files API)
+#   2. Converte o HTML em PDF (wkhtmltopdf)
+#   3. Envia por email: HTML no corpo + PDF e HTML anexados
 
 on:
-  # botão manual na aba Actions
   workflow_dispatch:
-
-  # agendado: toda segunda-feira às 9h UTC (6h de Brasília)
-  # ajuste/descomente conforme desejar
   schedule:
     - cron: "0 9 * * 1"
 
@@ -19,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout do repositório
+      - name: Checkout do repositorio
         uses: actions/checkout@v4
 
       - name: Configurar Python
@@ -27,28 +23,42 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Baixar relatório do Volume do Databricks
+      - name: Baixar relatorio do Volume do Databricks
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
         run: |
           mkdir -p reports
-          # caminho do arquivo no Volume (ajuste se o nome/pasta mudar)
           VOLUME_PATH="/Volumes/voc_project/bronze/raw_files/relatorio_voc.html"
-
-          echo "Baixando ${VOLUME_PATH} do Databricks..."
           curl --fail --silent --show-error \
             --request GET "${DATABRICKS_HOST}/api/2.0/fs/files${VOLUME_PATH}" \
             --header "Authorization: Bearer ${DATABRICKS_TOKEN}" \
             --output reports/relatorio_voc.html
-
-          echo "Arquivo baixado:"
           ls -la reports/
 
-      - name: Enviar relatório por email
+      # wkhtmltopdf renderiza o HTML como um navegador e gera o PDF.
+      # No runner Ubuntu isso é trivial (no Databricks Free Edition não seria possível,
+      # porque não há como instalar binários de sistema).
+      - name: Instalar wkhtmltopdf
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq wkhtmltopdf
+
+      - name: Converter HTML em PDF
+        run: |
+          wkhtmltopdf \
+            --enable-local-file-access \
+            --page-size A4 \
+            --margin-top 12mm --margin-bottom 12mm \
+            --margin-left 8mm --margin-right 8mm \
+            reports/relatorio_voc.html reports/relatorio_voc.pdf
+          ls -la reports/
+
+      - name: Enviar relatorio por email
         env:
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           EMAIL_DESTINO: ${{ secrets.EMAIL_DESTINO }}
           REPORT_PATH: reports/relatorio_voc.html
-        run: python scripts/send_report.py
+          PDF_PATH: reports/relatorio_voc.pdf
+        run: python scripts/send_report_git.py
